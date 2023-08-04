@@ -34,6 +34,7 @@
                 dense
                 :type="show ? 'text' : 'password'"
                 @click:append="show = !show"
+                @keydown.enter="signin"
               ></v-text-field>
               <v-row align="center" justify="space-around">
                 <v-col class="flex justify-center">
@@ -51,17 +52,17 @@
                   </v-btn>
                 </v-col>
               </v-row>
-              <div class="text-center mt-5">
-                <button
-                  type="text"
-                  class="text-gray-600"
-                  @click.prevent="dialog = true"
-                >
-                  Primeiro acesso
-                </button>
-              </div>
             </v-container>
           </v-form>
+          <div class="text-center mt-5">
+            <button
+              type="text"
+              class="text-gray-600"
+              @click.prevent="dialog = true"
+            >
+              Primeiro acesso
+            </button>
+          </div>
         </div>
       </div>
       <img

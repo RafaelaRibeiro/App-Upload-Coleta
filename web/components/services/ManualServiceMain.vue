@@ -1,5 +1,6 @@
 <template>
   <base-card icon="mdi-text-box-outline" text="Manual do Exame">
+    <loading :isLoading="isLoading" class="z-50" />
     <div class="grid grid-cols-12">
       <div class="col-span-7 px-4">
         <span class="my-4">Exame:</span>
@@ -48,13 +49,15 @@
 </template>
 
 <script>
+import Loading from '../loading/Loading.vue'
 import BaseCard from '../UI/BaseCard.vue'
 export default {
-  components: { BaseCard },
+  components: { BaseCard, Loading },
   data() {
     return {
       exams: [],
       selectedExam: {},
+      isLoading: false,
     }
   },
 
@@ -71,8 +74,20 @@ export default {
 
   methods: {
     async getExams() {
-      const response = await this.$axios.$get(`/exams/`)
-      this.exams = response
+      try {
+        this.isLoading = true
+        const response = await this.$axios.$get(`/exams/`)
+        this.exams = response
+      } catch (error) {
+        const { data } = error.response
+        this.$toast.error(data.message, {
+          position: 'top-center',
+        })
+
+        console.log(data.message)
+      } finally {
+        this.isLoading = false
+      }
     },
 
     updateSelectedExam(value) {
