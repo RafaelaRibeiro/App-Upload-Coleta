@@ -14,7 +14,7 @@ export default {
     return {
       fixed: false,
       companyName: 'Exato Consultoria',
-      appVersion: '1.0',
+      appVersion: '1.0.2',
       currentYear: new Date().getFullYear(),
     }
   },
