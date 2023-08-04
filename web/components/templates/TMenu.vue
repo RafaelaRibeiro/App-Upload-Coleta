@@ -41,11 +41,11 @@
               {{ subItem.title }}
             </el-menu-item>
           </el-submenu>
-          <el-menu-item @click="logout">
-            <v-icon class="pr-6"> mdi-logout </v-icon>
-            <span slot="title">{{ exit }}</span>
-          </el-menu-item>
         </div>
+        <el-menu-item @click="logout">
+          <v-icon class="pr-6"> mdi-logout </v-icon>
+          <span slot="title">{{ exit }}</span>
+        </el-menu-item>
       </el-menu>
     </v-navigation-drawer>
   </div>
@@ -65,6 +65,16 @@ export default {
           title: 'Compras',
           to: '/compras/coleta',
           subItems: [{ id: '1-1', icon: 'mdi-account-cash', title: 'Coleta' }],
+        },
+
+        {
+          id: '2',
+          icon: 'mdi-test-tube',
+          title: 'Serviços',
+          to: '/servicos/manual',
+          subItems: [
+            { id: '2-1', icon: 'mdi-text-box-outline', title: 'Manual' },
+          ],
         },
       ],
     }

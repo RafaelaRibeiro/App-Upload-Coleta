@@ -25,7 +25,7 @@ export class FirstAccessUseCase {
     });
 
     if (existingUser?.USR_SENHA_EXATO) {
-      throw new Error("Password already registered");
+      throw new Error("Senha já se encontra cadastrada");
     }
 
     if (password !== confirmPassword) throw new Error("Password not match");

@@ -4,7 +4,7 @@
       <div class="flex items-center justify-center w-2/5 mx-10">
         <div class="w-full justify-center mx-10">
           <div class="my-6">
-            <img class="w-64 mx-auto" src="~/assets/logo.png" alt="" />
+            <img class="w-64 mx-auto" src="~/assets/logo.png" alt="logo" />
           </div>
           <div class="my-4">
             <h1 class="text-lg font-medium text-center">Olá, Bem-vindo(a)</h1>
@@ -36,7 +36,7 @@
                 @click:append="show = !show"
               ></v-text-field>
               <v-row align="center" justify="space-around">
-                <v-col class="d-flex justify-center">
+                <v-col class="flex justify-center">
                   <v-btn
                     dark
                     block
@@ -52,7 +52,11 @@
                 </v-col>
               </v-row>
               <div class="text-center mt-5">
-                <button type="text" class="text-gray-600">
+                <button
+                  type="text"
+                  class="text-gray-600"
+                  @click.prevent="dialog = true"
+                >
                   Primeiro acesso
                 </button>
               </div>
@@ -60,8 +64,64 @@
           </v-form>
         </div>
       </div>
-      <img class="w-3/5 object-fill" src="../../assets/bg.jpg" alt="" />
+      <img
+        class="w-3/5 object-fill hidden md:block"
+        src="../../assets/bg.jpg"
+        alt="background"
+      />
     </div>
+
+    <v-dialog
+      v-model="dialog"
+      persistent
+      :overlay="false"
+      max-width="400px"
+      transition="dialog-transition"
+    >
+      <v-card>
+        <div class="my-4">
+          <h1 class="text-xl font-medium text-center">PRIMEIRO ACESSO</h1>
+        </div>
+
+        <v-form ref="form">
+          <v-container>
+            <span>Login:</span>
+            <v-text-field
+              v-model="user.login"
+              outlined
+              dense
+              placeholder="Digite seu login do smart"
+              :rules="[rules.required]"
+            ></v-text-field>
+            <span>Senha:</span>
+            <v-text-field
+              v-model="user.password"
+              outlined
+              dense
+              placeholder="Digite sua senha"
+              :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+              :type="showPassword ? 'text' : 'password'"
+              @click:append="showPassword = !showPassword"
+              :rules="[rules.required]"
+            ></v-text-field>
+            <span>Confirme sua senha:</span>
+            <v-text-field
+              v-model="user.confirmPassword"
+              outlined
+              dense
+              placeholder="Repita sua senha"
+              :append-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
+              :type="showConfirmPassword ? 'text' : 'password'"
+              @click:append="showConfirmPassword = !showConfirmPassword"
+              :rules="[rules.required, rules.passwordMatch]"
+            ></v-text-field>
+
+            <v-btn dark color="#042d65" @click="savePassword">Salvar</v-btn>
+            <v-btn color="error" @click="onCancel">Cancelar</v-btn>
+          </v-container>
+        </v-form>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -71,10 +131,23 @@ export default {
   data() {
     return {
       show: false,
-
+      showPassword: false,
+      showConfirmPassword: false,
+      dialog: false,
       login: '',
       password: '',
+      user: {
+        login: '',
+        password: '',
+        confirmPassword: '',
+      },
       loading: false,
+      rules: {
+        required: (value) => !!value || 'Campo obrigatório.',
+        passwordMatch: () =>
+          this.user.password === this.user.confirmPassword ||
+          'As senhas não correspondem.',
+      },
     }
   },
 
@@ -96,6 +169,35 @@ export default {
       } finally {
         this.loading = false
       }
+    },
+
+    async savePassword() {
+      try {
+        await this.$axios.$put(`/auth/first`, {
+          login: this.user.login,
+          password: this.user.password,
+          confirmPassword: this.user.confirmPassword,
+        })
+
+        this.$toast.success('Senha Registrada com sucesso')
+        this.dialog = false
+      } catch (error) {
+        if (error.response && error.response.data) {
+          const { data } = error.response
+          this.$toast.error(data.message, { position: 'top-center' })
+        } else {
+          console.error('Erro de resposta:', error)
+        }
+      }
+    },
+    onCancel() {
+      this.dialog = false
+      this.user = {
+        login: '',
+        password: '',
+        confirmPassword: '',
+      }
+      this.$refs.form.reset()
     },
   },
 }
